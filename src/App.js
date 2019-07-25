@@ -4,21 +4,38 @@ import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+    <body>
+
+    <div className="header">
+      <h1>QMF Catalog</h1>
+      <p>Resize the browser window to see the effect.</p>
+    </div>
+
+
+    <div className="row">
+      <div >
+        <div className="card">
+          <h2>Example 1</h2>
+          <h5>Title description, Dec 7, 2017</h5>
+          <button className="button"><span>Run </span></button>
+          <p>Sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.</p>
+        </div>
+        <div className="card">
+          <h2>Example 2</h2>
+          <h5>Title description, Sep 2, 2017</h5>
+          <p>Some text..</p>
+          <p>Sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.</p>
+        </div>
+      </div>
+    </div>
+
+    <div className="footer">
+      <p>Rocket Software 2019</p>
+    </div>
+
+    </body>
+  
     </div>
   );
 }
