@@ -153,7 +153,21 @@ body {
   color: #4a0d75
 }
 
-#myBar {
+#myBar1 {
+  height: 30px;
+  width: 0%;
+  color: white;
+  border: 2px solid #4a0d75;
+  display: inline;
+  /* padding: 5px 40px; */
+  border-radius: 4px;
+  background-color: #4a0d75;
+  text-align:center;
+  padding-top : 3px;
+  padding-bottom: 3px;
+}
+
+#myBar2 {
   height: 30px;
   width: 0%;
   color: white;
