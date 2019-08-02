@@ -240,6 +240,10 @@ export default class App extends React.Component {
     }
   }
 
+  login() {
+    document.getElementById('id01').style.display='block'
+  }
+
   render() {
     return (
       <div>
@@ -252,7 +256,24 @@ export default class App extends React.Component {
               <div className="card">
                 <h2>Example 1</h2>
                 <h5>Title description, Dec 7, 2017</h5>
-                <button className="button" value="example1" onClick={this.move1.bind(this)}><span>Run </span></button>
+                
+                <button className="button" value="example1" onClick={this.login.bind(this)}><span>Run </span></button>
+                <div id="id01" className="modal">
+                  <form className="modal-content animate" action="/action_page.php">
+                    <div className="imgcontainer">
+                      <span onClick={"document.getElementById('id01').style.display='none'"} className="close" title="Close Modal">&times;</span>
+                    </div>
+
+                     <div className="login_container">
+                      <label htmlFor="uname"><b>Username</b></label>
+                      <input type="text" placeholder="Enter Username" name="uname" required></input>
+                      <label htmlFor="psw"><b>Password</b></label>
+                      <input type="password" placeholder="Enter Password" name="psw" required></input>   
+                      <button type="submit-stuff" onClick={this.move1.bind(this)}>Login</button>
+                    </div>
+                  
+                  </form>
+                </div>
                 <a href="#" className="buttonDownload" value="example1" onClick={this.downloadJson.bind(this)}>Download</a>
                 {/* <h2 id="demo">  0%  </h2> */}
                 <div id="myBar1"></div>
