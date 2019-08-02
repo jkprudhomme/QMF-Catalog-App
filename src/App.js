@@ -11,7 +11,10 @@ export default class App extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      json: {},
+      json1: [],
+      json2: [],
+      json3: [],
+      json4: [],
       download: false
     }
     this.postToRepo = this.postToRepo.bind(this);
@@ -21,7 +24,7 @@ export default class App extends React.Component {
     this.downloadJson = this.downloadJson.bind(this);
   }
 
-  postToRepo(query) {
+  postToRepo(query, bar) {
     const self = this;
     const uri = "/api/repositories/DTS/connect";
     const data = {
@@ -41,18 +44,26 @@ export default class App extends React.Component {
         data: data,
       })
           .then(function (response) {
+            console.log("connecting to repo")
             console.log(response.data);
             console.log(response.status);
             console.log(response.statusText);
             console.log(response.data.data);
-            self.postJob(response.data.data.accessToken, query);
+            bar.style.border = "2px solid #4a0d75";
+            bar.style.backgroundColor = '#4a0d75';
+            bar.style.color = 'white';
+            bar.style.paddingRight = '6%';
+            bar.style.paddingLeft = '6%';
+            bar.style.textAlign = "center";
+            bar.innerHTML = '30%';
+            self.postJob(response.data.data.accessToken, query, bar);
           })
           .catch(function (error) {
             console.log(error);
           });
   }
 
-  postJob(token, query) {
+  postJob(token, query, bar) {
     const self = this;
     const uri = "/api/repositories/DTS/runObject?accessToken=" + token;
     const data = {
@@ -80,7 +91,11 @@ export default class App extends React.Component {
             console.log(response.data);
             console.log(response.status);
             console.log(response.statusText);
-            self.getJobResults(token, response.data.data.resultsIds[0]);
+            bar.style.paddingRight = '12%';
+            bar.style.paddingLeft = '12%';
+            bar.style.textAlign = "center";
+            bar.innerHTML = '60%';
+            self.getJobResults(token, response.data.data.resultsIds[0], bar);
           })
           .catch(function (error) {
             console.log(error);
@@ -88,7 +103,7 @@ export default class App extends React.Component {
   };
 
 
-  getJobResults(token, id) {
+  getJobResults(token, id, bar) {
     const self = this;
     const uri = "/api/repositories/DTS/results/" + id + "?offset=0&limit=10&accessToken=" + token;
       axios.request({
@@ -103,8 +118,39 @@ export default class App extends React.Component {
             console.log(response.data);
             console.log(response.status);
             console.log(response.statusText);
-            self.setState({json: response.data});
-            console.log(self.state.json);
+            clearInterval(id);
+            bar.innerHTML = "Complete";
+            bar.style.color = "#12cf0e";
+            bar.style.backgroundColor = "#fff9f2";
+            bar.style.textAlign = "center";
+            bar.style.paddingRight = "150px";
+            bar.style.paddingLeft = "150px";
+            console.log(bar.id);
+            switch(bar.id){
+              case('myBar1'): {
+                self.setState({json1: response.data.data.rows});
+                console.log(response.data.data.rows);
+                break;
+              }
+              case('myBar2'): {
+                self.setState({json2: response.data.data.rows});
+                console.log(self.state.json2);
+                break;
+              }
+              case('myBar3'): {
+                self.setState({json3: response.data.data.rows});
+                console.log(self.state.json3);
+                break;
+              }
+              case('myBar4'): {
+                self.setState({json4: response.data.data.rows});
+                console.log(self.state.json4);
+                break;
+              }
+              default: {
+                break;
+              }
+            }
           })
           .catch(function (error) {
             console.log(error);
@@ -144,110 +190,53 @@ export default class App extends React.Component {
 
 
     move(e) {
+      document.getElementById('id01').style.display='none';
+      console.log(e.target.value);
       switch(e.target.value){
         case 'example1': {
-          this.postToRepo("rsbi:/Data Sources/DB2/QMF Catalog/Queries/DB2ADMIN/PRODUCTSQ");
+          console.log("running example1");
+          this.postToRepo("rsbi:/Data Sources/DB2/QMF Catalog/Queries/DB2ADMIN/PRODUCTSQ", document.getElementById("myBar1"));
+          break;
         }
         case 'example2': {
-          this.postToRepo("rsbi:/Data Sources/DB2/QMF Catalog/Queries/DB2ADMIN/PRODUCTSQ");
+          console.log("running example2");
+          this.postToRepo("rsbi:/Data Sources/DB2/QMF Catalog/Queries/DB2ADMIN/APPLICANTQ", document.getElementById("myBar2"));
+          break;
         }
         case 'example3':{
-          this.postToRepo("rsbi:/Data Sources/DB2/QMF Catalog/Queries/DB2ADMIN/PRODUCTSQ");
+          console.log("running example3");
+          this.postToRepo("rsbi:/Data Sources/DB2/QMF Catalog/Queries/DB2ADMIN/STAFFQ", document.getElementById("myBar3"));
+          break;
         }
-      }
-      var elem = document.getElementById("myBar1");
-      var width = 0;
-      var padding = 0;
-      //elem.style.paddingLeft = "400px"
-      var id = setInterval(frame, 10);
-      function frame() {
-        if (width >= 12) {
-          clearInterval(id);
-          elem.innerHTML = "Complete";
-          elem.style.color = "#12cf0e";
-          elem.style.backgroundColor = "#fff9f2";
-          elem.style.textAlign = "center";
-          elem.style.paddingRight = "150px";
-          elem.style.paddingLeft = "150px";
-        } else {
-          padding++;
-          elem.style.paddingRight = padding + '%';
-          elem.style.paddingLeft = padding + '%';
-          elem.style.textAlign = "center";
-          width++;
-          elem.style.width = width + '%';
-          elem.innerHTML = width * 4  + '%';
-          //document.getElementById("demo").innerHTML = width * 4  + '%';
+        case 'example4':{
+          console.log("running example4");
+          this.postToRepo("rsbi:/Data Sources/DB2/QMF Catalog/Queries/DB2ADMIN/SALESQ", document.getElementById("myBar4"));
+          break;
+        }
+        default: {
+          break;
         }
       }
     }
 
-  move1() {
-    this.postToRepo("rsbi:/Data Sources/DB2/QMF Catalog/Queries/DB2ADMIN/PRODUCTSQ");
-    var elem = document.getElementById("myBar1");
-    var width = 0;
-    var padding = 0;
-    //elem.style.paddingLeft = "400px"
-    var id = setInterval(frame, 10);
-    function frame() {
-      if (width >= 12) {
-        clearInterval(id);
-        elem.innerHTML = "Complete";
-        elem.style.color = "#12cf0e";
-        elem.style.backgroundColor = "#fff9f2";
-        elem.style.textAlign = "center";
-        elem.style.paddingRight = "150px";
-        elem.style.paddingLeft = "150px";
-      } else {
-        padding++;
-        elem.style.paddingRight = padding + '%';
-        elem.style.paddingLeft = padding + '%';
-        elem.style.textAlign = "center";
-        width++;
-        elem.style.width = width + '%';
-        elem.innerHTML = width * 4  + '%';
-        //document.getElementById("demo").innerHTML = width * 4  + '%';
-      }
-    }
+
+  login(e) {
+    console.log(e.target.value)
+    document.getElementById('id01').style.display = 'block';
+    document.getElementById('submitButton').value = e.target.value;
   }
 
-  move2() {
-    this.postToRepo("rsbi:/Data Sources/DB2/QMF Catalog/Queries/DB2ADMIN/PRODUCTSQ");
-    var elem = document.getElementById("myBar2");
-    var width = 0;
-    var padding = 0;
-    //elem.style.paddingLeft = "400px"
-    var id = setInterval(frame, 10);
-    function frame() {
-      if (width >= 12) {
-        clearInterval(id);
-        elem.innerHTML = "Complete";
-        elem.style.color = "#12cf0e";
-        elem.style.backgroundColor = "#fff9f2";
-        elem.style.textAlign = "center";
-        elem.style.paddingRight = "150px";
-        elem.style.paddingLeft = "150px";
-      } else {
-        padding++;
-        elem.style.paddingRight = padding + '%';
-        elem.style.paddingLeft = padding + '%';
-        elem.style.textAlign = "center";
-        width++;
-        elem.style.width = width + '%';
-        elem.innerHTML = width * 4  + '%';
-        //document.getElementById("demo").innerHTML = width * 4  + '%';
-      }
-    }
+  removeLogin(e) {
+    document.getElementById('id01').style.display='none';
   }
 
-  login() {
-    document.getElementById('id01').style.display='block'
+  clickDownload(e) {
+    console.log(e);
   }
 
   render() {
     return (
       <div>
-        <body>
           <div className="header">
             <h1>QMF Catalog</h1>
           </div>
@@ -256,42 +245,57 @@ export default class App extends React.Component {
               <div className="card">
                 <h2>Example 1</h2>
                 <h5>Title description, Dec 7, 2017</h5>
-                
-                <button className="button" value="example1" onClick={this.login.bind(this)}><span>Run </span></button>
-                <div id="id01" className="modal">
-                  <form className="modal-content animate" action="/action_page.php">
-                    <div className="imgcontainer">
-                      <span onClick={"document.getElementById('id01').style.display='none'"} className="close" title="Close Modal">&times;</span>
-                    </div>
 
-                     <div className="login_container">
-                      <label htmlFor="uname"><b>Username</b></label>
-                      <input type="text" placeholder="Enter Username" name="uname" required></input>
-                      <label htmlFor="psw"><b>Password</b></label>
-                      <input type="password" placeholder="Enter Password" name="psw" required></input>   
-                      <button type="submit-stuff" onClick={this.move1.bind(this)}>Login</button>
-                    </div>
-                  
-                  </form>
-                </div>
-                <a href="#" className="buttonDownload" value="example1" onClick={this.downloadJson.bind(this)}>Download</a>
-                {/* <h2 id="demo">  0%  </h2> */}
+                <button className="button" value="example1" onClick={this.login.bind(this)}>Run</button>
+                <button className="buttonDownload" value="example1" onClick={this.downloadJson.bind(this)}>Download</button>
                 <div id="myBar1"></div>
               </div>
               <div className="card">
                 <h2>Example 2</h2>
                 <h5>Title description, Dec 7, 2017</h5>
-                <button className="button" value="example2" onClick={this.move2.bind(this)}><span>Run </span></button>
-                <a href="#" className="buttonDownload" value="example2" onClick={this.exportToJson.bind(this)}>Download</a>
-                {/* <h2 id="demo">  0%  </h2> */}
+
+                <button className="button" value="example2" onClick={this.login.bind(this)}>Run</button>
+                <button className="buttonDownload" value="example2" onClick={this.clickDownload.bind(this)}>
+                  <CSVLink data={this.state.json2}>Download</CSVLink>
+                </button>
                 <div id="myBar2"></div>
               </div>
+              <div className="card">
+                <h2>Example 3</h2>
+                <h5>Title description, Dec 7, 2017</h5>
+
+                <button className="button" value="example3" onClick={this.login.bind(this)}>Run</button>
+                <button className="buttonDownload" value="example3" onClick={this.downloadJson.bind(this)}>Download</button>
+                <div id="myBar3"></div>
+              </div>
+              <div className="card">
+                <h2>Example 4</h2>
+                <h5>Title description, Dec 7, 2017</h5>
+                <button className="button" value="example4" onClick={this.login.bind(this)}>Run</button>
+                <button className="buttonDownload" value="example4" onClick={this.exportToJson.bind(this)}>Download</button>
+                <div id="myBar4"></div>
+              </div>
+            </div>
+          </div>
+          <div id="id01" className="modal">
+            <div className="modal-content animate" action="/action_page.php">
+              <div className="imgcontainer">
+                <span onClick={this.removeLogin.bind(this)} className="close" title="Close Modal">&times;</span>
+              </div>
+
+               <div className="login_container">
+                <label htmlFor="uname"><b>Username</b></label>
+                <input type="text" placeholder="Enter Username" name="uname" required></input>
+                <label htmlFor="psw"><b>Password</b></label>
+                <input type="password" placeholder="Enter Password" name="psw" required></input>
+                <button id="submitButton" type="submit-stuff" onClick={this.move.bind(this)}>Login</button>
+              </div>
+
             </div>
           </div>
           <div className="footer">
             <p>Rocket Software 2019</p>
             </div>
-          </body>
       </div>
     );
   }
