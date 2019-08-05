@@ -4,8 +4,27 @@
   box-sizing: border-box;
 }
 
+.error {
+  display: none;
+  position: relative;
+  padding: 9px 18px;
+  width: 250px;
+  height: 35px;
+  border: none;
+
+	background-color: rgb(247, 82, 82);
+	color: white;
+
+	font-family: sans-serif;
+	text-decoration: none;
+	font-size: 0.9em;
+	text-align: center;
+  text-indent: 15px;
+  border-radius: 3px;
+}
+
 .buttonDownload {
-  display: inline-block;
+  display: none;
   border: none;
 	position: relative;
   padding: 9px 18px;

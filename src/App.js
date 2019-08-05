@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import axios from 'axios';
 import { CSVLink, CSVDownload } from "react-csv";
+import { BADRESP } from 'dns';
 
 const { Parser } = require('json2csv');
 
@@ -20,18 +21,18 @@ export default class App extends React.Component {
     this.postToRepo = this.postToRepo.bind(this);
     this.postJob = this.postJob.bind(this);
     this.getJobResults = this.getJobResults.bind(this);
-    this.exportToJson = this.exportToJson.bind(this);
-    this.downloadJson = this.downloadJson.bind(this);
+    // this.exportToJson = this.exportToJson.bind(this);
+    // this.downloadJson = this.downloadJson.bind(this);
   }
 
-  postToRepo(query, bar) {
+  postToRepo(query, bar, login, password) {
     const self = this;
     const uri = "/api/repositories/DTS/connect";
     const data = {
     	"repositoryStorage":
     	{
-    		"login": "db2admin",
-    		"password": "R0cket123"
+    		"login": login,//"db2admin",
+    		"password": password//"R0cket123"
     	}
     }
       axios.request({
@@ -56,14 +57,24 @@ export default class App extends React.Component {
             bar.style.paddingLeft = '6%';
             bar.style.textAlign = "center";
             bar.innerHTML = '30%';
-            self.postJob(response.data.data.accessToken, query, bar);
+            self.postJob(response.data.data.accessToken, query, bar, login, password);
           })
           .catch(function (error) {
+            console.log(bar.id)
             console.log(error);
+            if(bar.id == "myBar1"){
+              document.getElementById("err1").style.display = "inline-block";
+            }else if(bar.id =="myBar2"){
+              document.getElementById("err2").style.display = "inline-block";
+            }else if (bar.id =="myBar3"){
+              document.getElementById("err3").style.display = "inline-block";
+            }else if(bar.id == "myBar4"){
+              document.getElementById("err4").style.display = "inline-block";
+            }
           });
   }
 
-  postJob(token, query, bar) {
+  postJob(token, query, bar, login, password) {
     const self = this;
     const uri = "/api/repositories/DTS/runObject?accessToken=" + token;
     const data = {
@@ -73,8 +84,8 @@ export default class App extends React.Component {
       			{
       				"name": "DB2",
       				"type": "RELATIONAL",
-      				"login": "db2admin",
-      				"password": "R0cket123"
+      				"login": login,//"db2admin",
+      				"password": password//"R0cket123"
       			}
       		]
       }
@@ -129,21 +140,30 @@ export default class App extends React.Component {
             switch(bar.id){
               case('myBar1'): {
                 self.setState({json1: response.data.data.rows});
+                document.getElementById("dwnld1").style.display = "inline-block";
+                document.getElementById("err1").style.display = "none";
                 console.log(response.data.data.rows);
+                
                 break;
               }
               case('myBar2'): {
                 self.setState({json2: response.data.data.rows});
+                document.getElementById("dwnld2").style.display = "inline-block";
+                document.getElementById("err2").style.display = "none";
                 console.log(self.state.json2);
                 break;
               }
               case('myBar3'): {
                 self.setState({json3: response.data.data.rows});
+                document.getElementById("dwnld3").style.display = "inline-block";
+                document.getElementById("err3").style.display = "none";
                 console.log(self.state.json3);
                 break;
               }
               case('myBar4'): {
                 self.setState({json4: response.data.data.rows});
+                document.getElementById("dwnld4").style.display = "inline-block";
+                document.getElementById("err4").style.display = "none";
                 console.log(self.state.json4);
                 break;
               }
@@ -167,50 +187,52 @@ export default class App extends React.Component {
   //   }
   // }
 
-  exportToJson() {
-      let filename = "export.json";
-      let contentType = "application/json;charset=utf-8;";
-      var a = document.createElement('a');
-      a.download = filename;
-      console.log(this.state.json);
-      a.href = 'data:' + contentType + ',' + encodeURIComponent(this.state.json);
-      a.target = '_blank';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    }
+  // exportToJson() {
+  //     let filename = "export.json";
+  //     let contentType = "application/json;charset=utf-8;";
+  //     var a = document.createElement('a');
+  //     a.download = filename;
+  //     console.log(this.state.json);
+  //     a.href = 'data:' + contentType + ',' + encodeURIComponent(this.state.json);
+  //     a.target = '_blank';
+  //     document.body.appendChild(a);
+  //     a.click();
+  //     document.body.removeChild(a);
+  //   }
 
-    downloadJson(){
-      var data = [this.state.json];
-      document.createElement(<CSVDownload data={data} target="_blank" />);
-        return(
-          <CSVDownload data={data} target="_blank" />
-        )
-    }
+  //   downloadJson(){
+  //     var data = [this.state.json];
+  //     document.createElement(<CSVDownload data={data} target="_blank" />);
+  //       return(
+  //         <CSVDownload data={data} target="_blank" />
+  //       )
+  //   }
 
 
     move(e) {
+      var login = document.getElementById('uname').value;
+      var pass = document.getElementById('pass').value;
       document.getElementById('id01').style.display='none';
       console.log(e.target.value);
       switch(e.target.value){
         case 'example1': {
           console.log("running example1");
-          this.postToRepo("rsbi:/Data Sources/DB2/QMF Catalog/Queries/DB2ADMIN/PRODUCTSQ", document.getElementById("myBar1"));
+          this.postToRepo("rsbi:/Data Sources/DB2/QMF Catalog/Queries/DB2ADMIN/PRODUCTSQ", document.getElementById("myBar1"), login, pass);
           break;
         }
         case 'example2': {
           console.log("running example2");
-          this.postToRepo("rsbi:/Data Sources/DB2/QMF Catalog/Queries/DB2ADMIN/APPLICANTQ", document.getElementById("myBar2"));
+          this.postToRepo("rsbi:/Data Sources/DB2/QMF Catalog/Queries/DB2ADMIN/APPLICANTQ", document.getElementById("myBar2"), login, pass);
           break;
         }
         case 'example3':{
           console.log("running example3");
-          this.postToRepo("rsbi:/Data Sources/DB2/QMF Catalog/Queries/DB2ADMIN/STAFFQ", document.getElementById("myBar3"));
+          this.postToRepo("rsbi:/Data Sources/DB2/QMF Catalog/Queries/DB2ADMIN/STAFFQ", document.getElementById("myBar3"), login, pass);
           break;
         }
         case 'example4':{
           console.log("running example4");
-          this.postToRepo("rsbi:/Data Sources/DB2/QMF Catalog/Queries/DB2ADMIN/SALESQ", document.getElementById("myBar4"));
+          this.postToRepo("rsbi:/Data Sources/DB2/QMF Catalog/Queries/DB2ADMIN/SALESQ", document.getElementById("myBar4"), login, pass);
           break;
         }
         default: {
@@ -244,33 +266,37 @@ export default class App extends React.Component {
             <div>
               <div className="card">
                 <h2>Example 1</h2>
-                <h5>Title description, Dec 7, 2017</h5>
+                <h5>Products Query</h5>
 
                 <button className="button" value="example1" onClick={this.login.bind(this)}>Run</button>
-                <CSVLink className="buttonDownload" data={this.state.json2}>Download</CSVLink>
+                <div className="error" id= "err1">Incorrect login and password.</div>
+                <CSVLink className="buttonDownload"  id="dwnld1" data={ this.state.json2}>Download</CSVLink>
                 <div id="myBar1"></div>
               </div>
               <div className="card">
                 <h2>Example 2</h2>
-                <h5>Title description, Dec 7, 2017</h5>
+                <h5>Applicant Query</h5>
 
                 <button className="button" value="example2" onClick={this.login.bind(this)}>Run</button>
-                <CSVLink className="buttonDownload" data={this.state.json2}>Download</CSVLink>
+                <div className="error" id= "err2">Incorrect login and password.</div>
+                <CSVLink className="buttonDownload" id="dwnld2" data={this.state.json2}>Download</CSVLink>
                 <div id="myBar2"></div>
               </div>
               <div className="card">
                 <h2>Example 3</h2>
-                <h5>Title description, Dec 7, 2017</h5>
+                <h5>Staff Query</h5>
 
                 <button className="button" value="example3" onClick={this.login.bind(this)}>Run</button>
-                <CSVLink className="buttonDownload" data={this.state.json2}>Download</CSVLink>
+                <div className="error" id= "err3">Incorrect login and password.</div>
+                <CSVLink className="buttonDownload" id="dwnld3" data={this.state.json2}>Download</CSVLink>
                 <div id="myBar3"></div>
               </div>
               <div className="card">
                 <h2>Example 4</h2>
-                <h5>Title description, Dec 7, 2017</h5>
+                <h5>Sales Query</h5>
                 <button className="button" value="example4" onClick={this.login.bind(this)}>Run</button>
-                <CSVLink className="buttonDownload" data={this.state.json2}>Download</CSVLink>
+                <div className="error" id= "err4">Incorrect login and password.</div>
+                <CSVLink className="buttonDownload" id="dwnld4" data={this.state.json2}>Download</CSVLink>
                 <div id="myBar4"></div>
               </div>
             </div>
@@ -283,9 +309,9 @@ export default class App extends React.Component {
 
                <div className="login_container">
                 <label htmlFor="uname"><b>Username</b></label>
-                <input type="text" placeholder="Enter Username" name="uname" required></input>
+                <input type="text" placeholder="Enter Username" name="uname" required id="uname"></input>
                 <label htmlFor="psw"><b>Password</b></label>
-                <input type="password" placeholder="Enter Password" name="psw" required></input>
+                <input type="password" placeholder="Enter Password" name="psw" required id="pass"></input>
                 <button id="submitButton" type="submit-stuff" onClick={this.move.bind(this)}>Login</button>
               </div>
 
