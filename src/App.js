@@ -247,7 +247,7 @@ export default class App extends React.Component {
                 <h5>Title description, Dec 7, 2017</h5>
 
                 <button className="button" value="example1" onClick={this.login.bind(this)}>Run</button>
-                <button className="buttonDownload" value="example1" onClick={this.downloadJson.bind(this)}>Download</button>
+                <CSVLink className="buttonDownload" data={this.state.json2}>Download</CSVLink>
                 <div id="myBar1"></div>
               </div>
               <div className="card">
@@ -255,9 +255,7 @@ export default class App extends React.Component {
                 <h5>Title description, Dec 7, 2017</h5>
 
                 <button className="button" value="example2" onClick={this.login.bind(this)}>Run</button>
-                <button className="buttonDownload" value="example2" onClick={this.clickDownload.bind(this)}>
-                  <CSVLink data={this.state.json2}>Download</CSVLink>
-                </button>
+                <CSVLink className="buttonDownload" data={this.state.json2}>Download</CSVLink>
                 <div id="myBar2"></div>
               </div>
               <div className="card">
@@ -265,14 +263,14 @@ export default class App extends React.Component {
                 <h5>Title description, Dec 7, 2017</h5>
 
                 <button className="button" value="example3" onClick={this.login.bind(this)}>Run</button>
-                <button className="buttonDownload" value="example3" onClick={this.downloadJson.bind(this)}>Download</button>
+                <CSVLink className="buttonDownload" data={this.state.json2}>Download</CSVLink>
                 <div id="myBar3"></div>
               </div>
               <div className="card">
                 <h2>Example 4</h2>
                 <h5>Title description, Dec 7, 2017</h5>
                 <button className="button" value="example4" onClick={this.login.bind(this)}>Run</button>
-                <button className="buttonDownload" value="example4" onClick={this.exportToJson.bind(this)}>Download</button>
+                <CSVLink className="buttonDownload" data={this.state.json2}>Download</CSVLink>
                 <div id="myBar4"></div>
               </div>
             </div>
