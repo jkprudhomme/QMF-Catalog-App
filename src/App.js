@@ -1,11 +1,8 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 import axios from 'axios';
-import { CSVLink, CSVDownload } from "react-csv";
-import { BADRESP } from 'dns';
-
-const { Parser } = require('json2csv');
+import { CSVLink} from "react-csv";
+// import { BADRESP } from 'dns';
 
 
 export default class App extends React.Component {
@@ -16,13 +13,16 @@ export default class App extends React.Component {
       json2: [],
       json3: [],
       json4: [],
+      headers1: [],
+      headers2: [],
+      headers3: [],
+      headers4: [],
       download: false
     }
     this.postToRepo = this.postToRepo.bind(this);
     this.postJob = this.postJob.bind(this);
     this.getJobResults = this.getJobResults.bind(this);
-    // this.exportToJson = this.exportToJson.bind(this);
-    // this.downloadJson = this.downloadJson.bind(this);
+    this.parseData = this.parseData.bind(this);
   }
 
   postToRepo(query, bar, login, password) {
@@ -62,13 +62,13 @@ export default class App extends React.Component {
           .catch(function (error) {
             console.log(bar.id)
             console.log(error);
-            if(bar.id == "myBar1"){
+            if(bar.id === "myBar1"){
               document.getElementById("err1").style.display = "inline-block";
-            }else if(bar.id =="myBar2"){
+            }else if(bar.id ==="myBar2"){
               document.getElementById("err2").style.display = "inline-block";
-            }else if (bar.id =="myBar3"){
+            }else if (bar.id === "myBar3"){
               document.getElementById("err3").style.display = "inline-block";
-            }else if(bar.id == "myBar4"){
+            }else if(bar.id === "myBar4"){
               document.getElementById("err4").style.display = "inline-block";
             }
           });
@@ -139,32 +139,28 @@ export default class App extends React.Component {
             console.log(bar.id);
             switch(bar.id){
               case('myBar1'): {
-                self.setState({json1: response.data.data.rows});
+                self.parseData(response.data.data.metadata, response.data.data.rows, 1)
                 document.getElementById("dwnld1").style.display = "inline-block";
                 document.getElementById("err1").style.display = "none";
-                console.log(response.data.data.rows);
-                
+
                 break;
               }
               case('myBar2'): {
-                self.setState({json2: response.data.data.rows});
+                self.parseData(response.data.data.metadata, response.data.data.rows, 2)
                 document.getElementById("dwnld2").style.display = "inline-block";
                 document.getElementById("err2").style.display = "none";
-                console.log(self.state.json2);
                 break;
               }
               case('myBar3'): {
-                self.setState({json3: response.data.data.rows});
+                self.parseData(response.data.data.metadata, response.data.data.rows, 3)
                 document.getElementById("dwnld3").style.display = "inline-block";
                 document.getElementById("err3").style.display = "none";
-                console.log(self.state.json3);
                 break;
               }
               case('myBar4'): {
-                self.setState({json4: response.data.data.rows});
+                self.parseData(response.data.data.metadata, response.data.data.rows, 4)
                 document.getElementById("dwnld4").style.display = "inline-block";
                 document.getElementById("err4").style.display = "none";
-                console.log(self.state.json4);
                 break;
               }
               default: {
@@ -176,38 +172,6 @@ export default class App extends React.Component {
             console.log(error);
           });
   }
-
-  // function makeFile(json) {
-  //   try {
-  //     const parser = new Parser(opts);
-  //     const csv = parser.parse(myData);
-  //     console.log(csv);
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // }
-
-  // exportToJson() {
-  //     let filename = "export.json";
-  //     let contentType = "application/json;charset=utf-8;";
-  //     var a = document.createElement('a');
-  //     a.download = filename;
-  //     console.log(this.state.json);
-  //     a.href = 'data:' + contentType + ',' + encodeURIComponent(this.state.json);
-  //     a.target = '_blank';
-  //     document.body.appendChild(a);
-  //     a.click();
-  //     document.body.removeChild(a);
-  //   }
-
-  //   downloadJson(){
-  //     var data = [this.state.json];
-  //     document.createElement(<CSVDownload data={data} target="_blank" />);
-  //       return(
-  //         <CSVDownload data={data} target="_blank" />
-  //       )
-  //   }
-
 
     move(e) {
       var login = document.getElementById('uname').value;
@@ -243,7 +207,6 @@ export default class App extends React.Component {
 
 
   login(e) {
-    console.log(e.target.value)
     document.getElementById('id01').style.display = 'block';
     document.getElementById('submitButton').value = e.target.value;
   }
@@ -252,8 +215,30 @@ export default class App extends React.Component {
     document.getElementById('id01').style.display='none';
   }
 
-  clickDownload(e) {
-    console.log(e);
+  parseData(metadata, rows, num ) {
+    var headers = [];
+    for (let elem of metadata) {
+      headers.push(elem.name);
+    }
+    rows.unshift(headers);
+    let data = []
+    for (let elem of rows) {
+      data.push(elem.map(String));
+    }
+    switch(num) {
+      case(1): {
+        this.setState({json1: data});
+      }
+      case(2): {
+        this.setState({json2: data});
+      }
+      case(3): {
+        this.setState({json3: data});
+      }
+      case(4): {
+        this.setState({json4: data});
+      }
+    }
   }
 
   render() {
@@ -270,7 +255,7 @@ export default class App extends React.Component {
 
                 <button className="button" value="example1" onClick={this.login.bind(this)}>Run</button>
                 <div className="error" id= "err1">Incorrect login and password.</div>
-                <CSVLink className="buttonDownload"  id="dwnld1" data={ this.state.json2}>Download</CSVLink>
+                <CSVLink className="buttonDownload" id="dwnld1" filename={"query1_data.csv"} data={this.state.json1}>Download</CSVLink>
                 <div id="myBar1"></div>
               </div>
               <div className="card">
@@ -279,7 +264,7 @@ export default class App extends React.Component {
 
                 <button className="button" value="example2" onClick={this.login.bind(this)}>Run</button>
                 <div className="error" id= "err2">Incorrect login and password.</div>
-                <CSVLink className="buttonDownload" id="dwnld2" data={this.state.json2}>Download</CSVLink>
+                <CSVLink className="buttonDownload" id="dwnld2" filename={"query2_data.csv"} data={this.state.json2}>Download</CSVLink>
                 <div id="myBar2"></div>
               </div>
               <div className="card">
@@ -288,7 +273,7 @@ export default class App extends React.Component {
 
                 <button className="button" value="example3" onClick={this.login.bind(this)}>Run</button>
                 <div className="error" id= "err3">Incorrect login and password.</div>
-                <CSVLink className="buttonDownload" id="dwnld3" data={this.state.json2}>Download</CSVLink>
+                <CSVLink className="buttonDownload" id="dwnld3" filename={"query3_data.csv"} data={this.state.json3}>Download</CSVLink>
                 <div id="myBar3"></div>
               </div>
               <div className="card">
@@ -296,7 +281,7 @@ export default class App extends React.Component {
                 <h5>Sales Query</h5>
                 <button className="button" value="example4" onClick={this.login.bind(this)}>Run</button>
                 <div className="error" id= "err4">Incorrect login and password.</div>
-                <CSVLink className="buttonDownload" id="dwnld4" data={this.state.json2}>Download</CSVLink>
+                <CSVLink className="buttonDownload" id="dwnld4" filename={"query4_data.csv"} data={this.state.json4}>Download</CSVLink>
                 <div id="myBar4"></div>
               </div>
             </div>

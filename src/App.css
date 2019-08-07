@@ -125,6 +125,10 @@
   margin: 2px;
 }
 
+.button:hover {
+  background-color: #ec8610;
+}
+
 /*btttttntntntntntntntntntntnt */
 
 body {
